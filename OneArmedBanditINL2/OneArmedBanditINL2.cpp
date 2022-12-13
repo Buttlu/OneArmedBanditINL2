@@ -111,7 +111,7 @@ int makeBet(int balance) {
 }
 
 //gets random character
-//the '% 3' return a value of 0, 1, or 2 which is the indices of the symbols array
+//the '% sizeof(symbols)' returns a value between 0 and the length of the array (in this case 3) - 1, which matches it's indices
 char getRandomCharacter() {
 	char symbols[3] = { 'A', 'O', 'X' };	
 	return symbols[rand() % sizeof(symbols)];
