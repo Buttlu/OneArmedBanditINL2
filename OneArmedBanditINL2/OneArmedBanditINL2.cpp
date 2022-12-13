@@ -1,7 +1,5 @@
 #include <ctime>
 #include <iostream>
-#include <chrono>
-#include <thread>
 #include <cctype>
 #include "Miscellaneous.h"
 using namespace std;
@@ -22,12 +20,14 @@ int main() {
 		cout << "You're too young to play." << endl;
 		return 0;
 	}
-	int balance, bet, winningRows, roundWin, winMult;
-	char grid[3][3];
 
+	int balance, bet, winningRows, roundWin, winMult;
+	char grid[3][3]{};
+	
 	clearScreen();
 	balance = insert();
 	while (true) {
+		//prints out the players current balance
 		cout << "balance: " << balance << " kr" << endl << endl;
 		bet = makeBet(balance);
 		balance -= bet;
@@ -110,7 +110,6 @@ int makeBet(int balance) {
 	}
 }
 
-
 //gets random character
 //the '% 3' return a value of 0, 1, or 2 which is the indices of the symbols array
 char getRandomCharacter() {
@@ -118,31 +117,51 @@ char getRandomCharacter() {
 	return symbols[rand() % sizeof(symbols)];
 }
 
-//temporary char getRandomCharacter for testing purposes
-//char getRandomCharacter() { return 'A'; }
-
 //handles writing out the grid
+//version for writing entire grid (3x3) 
+//and then the real grid 1 row at a time from top to bottom.
 void writeGrid(char grid[3][3]) {
 	char symbols[3] = { 'A', 'O', 'X' };
-	
-	cout << endl;
-	for (int i = 0; i < 3; i++) {
+	int deleteRows = 7, writeRandomRows = 0, actualRow = 0, randomRows = 69;
+	bool done = false;
+
+	for (int i = 0; i < randomRows; i++) {
+		//writes out the random grid. The random characters 
+		//don't change the actual grid so they just get
+		//overwritten by the actual grid when their time comes
 		cout << "-------------" << endl;
-		srand(time(0));
-		for (int j = 0; j < 20; j++) {
-			//writes out random row
-			cout << "| " << symbols[rand() % 3] << " | " << symbols[rand() % 3] << " | " << symbols[rand() % 3] << " |";
-			this_thread::sleep_for(chrono::milliseconds(50));
-			cout << "\x1b[2K\r"; //deletes previous line
+		for (int j = writeRandomRows; j < 3; j++) {
+			for (int k = 0; k < 3; k++)
+				cout << "| " << symbols[rand() % 3] << " ";
+			cout << "|" << endl;
+			cout << "-------------" << endl;
 		}
-		//writes out actual line
-		for (int c = 0; c < 3; c++) {
-			cout << "| ";
-			cout << grid[i][c] << " ";
+
+		//delay for extra suspencion and so the player sees what happens
+		millieDelay(50);
+		//moves up the needed number of lines. 7 (all 3 rows) -> 5 (exclude top row) -> 3 (only bottom row)
+		for (int j = 0; j < deleteRows; j++) 
+			cout << "\x1b[A"; 
+		cout << "\x1b[J"; //removes all lines below the cursor
+
+		//writes out the actual rows roughly whenever a third of the main loop is done 
+		//the i > {value} is so that the first row doesn't get written almost immediatly.
+		if (i % (randomRows / 3) == 0 && i > 4) {
+			cout << "-------------" << endl;
+			for (int j = 0; j < 3; j++)
+				cout << "| " << grid[actualRow][j] << " ";
+			cout << "|" << endl;
+			//changes values as to not overwrite the actual grid lines
+			actualRow++;
+			writeRandomRows++;
+			deleteRows -= 2;
 		}
-		cout << "|" << endl;
 	}
-	cout << "-------------" << endl << endl;
+	//the above if doesn't fully function for the third line so it get's written here instead
+	//the entire actual grid writing part can prob be re-written but that will be another time
+	cout << "-------------" << endl;
+	cout << "| " << grid[2][0] << " | " << grid[2][1] << " | " << grid[2][2] << " |" << endl;
+	cout << "-------------" << endl;
 }
 
 int countWinningRows(char grid[3][3]) {
@@ -199,45 +218,25 @@ int countWinningRows(char grid[3][3]) {
 
 //returns the winMultiplaier based amount of winning rows
 int winMultiplier(int wins) {
-	int winMult;
-	switch (wins) {
-	case 1:
-		winMult = 2;
-		break;
-	case 2:
-		winMult = 3;
-		break;
-	case 3:
-		winMult = 4;
-		break;
-	case 4:
-		winMult = 5;
-		break;
-	case 5:
-		winMult = 7;
-		break;
-	case 6: //own
-		winMult = 8;
-		break;
-	case 8:
-		winMult = 10;
-		break;
-	default:
-		cout << "You didn't win this time." << endl;
-		return 0;
-	}
-	cout << "You got a win-multiplier of " << winMult << "!" << endl;
-	return winMult;
+	//index 0 = 0 wins, index 1 = 1 win, index 2 = 2 wins, etc 
+	int winMultipliers[9] = { 0,2,3,4,5,7,8,0,10 };
+	int won = winMultipliers[wins];
+	if (won > 1) cout << "You got a win-multiplier of " << won << "!" << endl;
+	else cout << "You didn't win this time." << endl;
+	return won;
 }
 
 //gets what the player wants to do when there is no money
 int noMoney() {
 	string noMoneyChoice;
 	while (true) {
-		cout << endl << "You're out of money. What do you want to do?" << endl << "Type '1' or 'Quit' to quit" << endl << "Type '2' or 'More' to add more money to your balance" << endl;
+		cout << endl << "You're out of money. What do you want to do?" << endl 
+			<< "Type '1' or 'Quit' to quit" << endl 
+			<< "Type '2' or 'More' to add more money to your balance" << endl;
 		cin >> noMoneyChoice;
-		if (stringToLower(noMoneyChoice) == "1" || stringToLower(noMoneyChoice) == "quit") return 1;
-		else if (stringToLower(noMoneyChoice) == "2" || stringToLower(noMoneyChoice) == "more") return 2;
+		preventCrash();
+		if (noMoneyChoice == "1" || stringToLower(noMoneyChoice) == "quit") return 1;
+		else if (noMoneyChoice == "2" || stringToLower(noMoneyChoice) == "more") return 2;
 		else cout << "Invalid choice, try another alternativ" << endl;
 	}
 }

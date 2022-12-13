@@ -3,9 +3,11 @@
 
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <thread>
 using namespace std;
 
-//QOL function that allows an entire string to be turned lowercase
+//function that allows an entire string to be turned lowercase
 //made this since the normal tolower mostly only works with singular chars
 string stringToLower(string str) {
     string emptyStr("");
@@ -18,14 +20,18 @@ string stringToLower(string str) {
     return emptyStr;
 }
 
-int bigger(int num1, int num2) { return num1 < num2 ? num1 : num2; } //returns the smaller of 2 numbers
-int smaller(int num1, int num2) { return num1 > num2 ? num1 : num2; } //returns the bigger of 2 numbers
+int bigger(int num1, int num2) { return num1 < num2 ? num1 : num2; } //returns the bigger of 2 numbers
+int smaller(int num1, int num2) { return num1 > num2 ? num1 : num2; } //returns the smaller of 2 numbers
 
 void clearScreen() { system("cls"); } //clears screen
 
 //prevents infinite loops by removing the error flag (flag prevents cin from activating again)
-// and ignore letters folloing numbers in int inputs
+//and ignore letters folloing numbers in int inputs
 void preventCrash() {
     cin.clear();
     cin.ignore();
 }
+
+//functions for getting delays
+void millieDelay(int delay) { this_thread::sleep_for(chrono::milliseconds(delay)); }
+void secondsDelay(int delay) { this_thread::sleep_for(chrono::seconds(delay)); }
