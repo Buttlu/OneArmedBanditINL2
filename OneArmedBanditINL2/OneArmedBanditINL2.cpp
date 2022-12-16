@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cctype>
 #include "Miscellaneous.h"
+#include <cmath>
 using namespace std;
 
 bool oldEnough();
@@ -35,7 +36,7 @@ int main() {
 		cout << "You're betting " << bet << " kr" << endl;
 
 		//fills the grid array with random symbols
-		srand(time(0));
+		srand((signed)time(0));
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++)
 				grid[i][j] = getRandomCharacter();
@@ -117,17 +118,16 @@ char getRandomCharacter() {
 	return symbols[rand() % sizeof(symbols)];
 }
 
-//handles writing out the grid
-//version for writing entire grid (3x3) 
-//and then the real grid 1 row at a time from top to bottom.
+//function for writing out the grid
+//write all random for ~40 times then each line after 20 loops
+//version for writing entire grid (3x3) and then the real grid 1 row at a time from top to bottom.
 void writeGrid(char grid[3][3]) {
 	char symbols[3] = { 'A', 'O', 'X' };
-	int deleteRows = 7, writeRandomRows = 0, actualRow = 0, randomRows = 69;
+	int deleteRows = 7, writeRandomRows = 0, actualRow = 0, randomRows = 80; //randomRows has to be divisible by 3
 	bool done = false;
 
 	for (int i = 0; i < randomRows; i++) {
-		//writes out the random grid. The random characters 
-		//don't change the actual grid so they just get
+		//writes out the random grid. The random characters don't change the actual grid so they just get
 		//overwritten by the actual grid when their time comes
 		cout << "-------------" << endl;
 		for (int j = writeRandomRows; j < 3; j++) {
@@ -139,14 +139,13 @@ void writeGrid(char grid[3][3]) {
 
 		//delay for extra suspencion and so the player sees what happens
 		millieDelay(50);
-		//moves up the needed number of lines. 7 (all 3 rows) -> 5 (exclude top row) -> 3 (only bottom row)
-		for (int j = 0; j < deleteRows; j++) 
-			cout << "\x1b[A"; 
-		cout << "\x1b[J"; //removes all lines below the cursor
 
-		//writes out the actual rows roughly whenever a third of the main loop is done 
-		//the i > {value} is so that the first row doesn't get written almost immediatly.
-		if (i % (randomRows / 3) == 0 && i > 4) {
+		//clears the grid every turn
+		clearConsoleLines(deleteRows);
+
+		//writes out the actual lines after a certain amount of turns have passed
+		//first after half, second after 3/4, and last row on last turn
+		if (i == 39 || i == 59 || i == 79) {
 			cout << "-------------" << endl;
 			for (int j = 0; j < 3; j++)
 				cout << "| " << grid[actualRow][j] << " ";
@@ -157,21 +156,20 @@ void writeGrid(char grid[3][3]) {
 			deleteRows -= 2;
 		}
 	}
-	//the above if doesn't fully function for the third line so it get's written here instead
-	//the entire actual grid writing part can prob be re-written but that will be another time
-	cout << "-------------" << endl;
-	cout << "| " << grid[2][0] << " | " << grid[2][1] << " | " << grid[2][2] << " |" << endl;
+	//for writing out the last line of the grid
 	cout << "-------------" << endl;
 }
 
+//function for calculating the amount of winning rows
 int countWinningRows(char grid[3][3]) {
 	int totalWins = 0;
 
+	//for rows
 	//checks rows from top to bottom
 	bool threeInARow = true;
 	for (int i = 0; i < 3; i++) { // goes down
 		threeInARow = true;
-		for (int j = 0; j < 3 - 1; j++) { // goes right
+		for (int j = 0; j < 2; j++) { // goes right
 			if (grid[i][j] != grid[i][j + 1])
 				threeInARow = false;
 		}
@@ -179,11 +177,11 @@ int countWinningRows(char grid[3][3]) {
 			totalWins++;
 	}
 
-	// for 3
+	//for columns
 	//checks columns from left to right
 	for (int i = 0; i < 3; i++) { // goes right
 		threeInARow = true;
-		for (int j = 0; j < 3 - 1; j++) { // goes down
+		for (int j = 0; j < 2; j++) { // goes down
 			if (grid[j][i] != grid[j + 1][i])
 				threeInARow = false;
 		}
@@ -194,7 +192,7 @@ int countWinningRows(char grid[3][3]) {
 	// for \-diagonal
 	//checks diagonal from top-left (0,0) to bottom-right (2,2)
 	threeInARow = true;
-	for (int i = 0; i < 3 - 1; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (grid[i][i] != grid[i + 1][i + 1])
 			threeInARow = false;
 	}
@@ -205,7 +203,7 @@ int countWinningRows(char grid[3][3]) {
 	//checks diagonal from bottom-left (0,2) to top-right (2,0)
 	threeInARow = true;
 	for (int i = 1; i < 3; i++) {
-		if (grid[0][3 - 1] != grid[i][3 - 1 - i])
+		if (grid[0][2] != grid[i][2 - i])
 			threeInARow = false;
 	}
 	if (threeInARow)

@@ -35,3 +35,13 @@ void preventCrash() {
 //functions for getting delays
 void millieDelay(int delay) { this_thread::sleep_for(chrono::milliseconds(delay)); }
 void secondsDelay(int delay) { this_thread::sleep_for(chrono::seconds(delay)); }
+
+//function for deleting a set number of lines amount of lines is determined by deleteRows
+//works by moving the cursor upp the required amount of rows and then deleting everything below it
+void clearConsoleLines(int deleteRows) {
+    //moves up the needed number of lines.
+    for (int j = 0; j < deleteRows; j++) {
+        cout << "\x1b[A"; 
+    }
+    cout << "\x1b[J"; //removes all lines below the cursor
+}
