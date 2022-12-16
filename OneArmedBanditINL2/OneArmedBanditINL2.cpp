@@ -50,7 +50,7 @@ int main() {
 		if (roundWin > 0) cout << "You won " << roundWin << " kr!" << endl;
 		
 		balance += roundWin;
-		cout << "Current balance: " << balance << " kr" << endl;
+		cout << endl << "Current balance: " << balance << " kr" << endl;
 
 		//gets what the player wants to do when money is out
 		if (balance <= 0) {
@@ -100,14 +100,19 @@ int insert() {
 //handles the betting per round
 int makeBet(int balance) {
 	int roundBet;
+	bool betZero = false;
 	while (true) {
 		cout << "How much do you want to bet? ";
 		cin >> roundBet;
 		preventCrash();
-		if (roundBet <= balance)
-			return roundBet;
-		else
+		if (roundBet > balance)
 			cout << "You don't have enough money, try again" << endl;
+		else if (roundBet <= 0 && !betZero) {
+			cout << "Did you mean to bet 0 kr?" << endl << "Type '0' again to confirm" << endl;
+			betZero = true;
+		}
+		else
+			return roundBet;
 	}
 }
 
@@ -247,9 +252,9 @@ bool playAgain() {
 		cin >> playMore;
 		preventCrash();
 		
-		if (stringToLower(playMore) == "y")
+		if (stringToLower(playMore) == "y" || stringToLower(playMore) == "yes")
 			return true;
-		else if (stringToLower(playMore) == "n")
+		else if (stringToLower(playMore) == "n" || stringToLower(playMore) == "no")
 			return false;
 		else
 			cout << "Invalid choice, try another alternative." << endl;
