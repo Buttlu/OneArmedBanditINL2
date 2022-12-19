@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cctype>
 #include "Miscellaneous.h"
-#include <cmath>
 using namespace std;
 
 bool oldEnough();
@@ -17,7 +16,7 @@ bool playAgain();
 
 int main() {
 	//gets if the player is old enough
-	if (!oldEnough()) {
+	if (!oldEnough()) {	
 		cout << "You're too young to play." << endl;
 		return 0;
 	}
@@ -42,7 +41,7 @@ int main() {
 				grid[i][j] = getRandomCharacter();
 		}
 
-		//calculats and announces the won amount (if any)
+		//calculates and announces the won amount (if any)
 		writeGrid(grid);
 		winningRows = countWinningRows(grid);
 		winMult = winMultiplier(winningRows);
@@ -128,8 +127,7 @@ char getRandomCharacter() {
 //version for writing entire grid (3x3) and then the real grid 1 row at a time from top to bottom.
 void writeGrid(char grid[3][3]) {
 	char symbols[3] = { 'A', 'O', 'X' };
-	int deleteRows = 7, writeRandomRows = 0, actualRow = 0, randomRows = 80; //randomRows has to be divisible by 3
-	bool done = false;
+	int deleteRows = 7, writeRandomRows = 0, actualRow = 0, randomRows = 80;
 
 	for (int i = 0; i < randomRows; i++) {
 		//writes out the random grid. The random characters don't change the actual grid so they just get
@@ -142,7 +140,7 @@ void writeGrid(char grid[3][3]) {
 			cout << "-------------" << endl;
 		}
 
-		//delay for extra suspencion and so the player sees what happens
+		//delay for extra suspension and so the player sees what happens
 		millieDelay(50);
 
 		//clears the grid every turn

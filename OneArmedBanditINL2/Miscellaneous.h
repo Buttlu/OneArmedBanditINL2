@@ -1,5 +1,5 @@
 //file includes quality of life (QOL) functions that don't really fit the program 
-//but are ones that can be used to make some stuff easeier
+//but are ones that can be used to make some stuff easier
 
 #include <iostream>
 #include <string>
@@ -26,7 +26,7 @@ int smaller(int num1, int num2) { return num1 > num2 ? num1 : num2; } //returns 
 void clearScreen() { system("cls"); } //clears screen
 
 //prevents infinite loops by removing the error flag (flag prevents cin from activating again)
-//and ignore letters folloing numbers in int inputs
+//and ignore letters following numbers in int inputs
 void preventCrash() {
     cin.clear();
     cin.ignore();
@@ -37,7 +37,7 @@ void millieDelay(int delay) { this_thread::sleep_for(chrono::milliseconds(delay)
 void secondsDelay(int delay) { this_thread::sleep_for(chrono::seconds(delay)); }
 
 //function for deleting a set number of lines amount of lines is determined by deleteRows
-//works by moving the cursor upp the required amount of rows and then deleting everything below it
+//works by moving the cursor up the required amount of rows and then deleting everything below it
 void clearConsoleLines(int deleteRows) {
     //moves up the needed number of lines.
     for (int j = 0; j < deleteRows; j++) {
